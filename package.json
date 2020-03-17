@@ -1,6 +1,6 @@
 {
-  "name": "@mikestaub/passport-slack",
-  "version": "1.0.1",
+  "name": "async-passport-slack",
+  "version": "0.0.1",
   "description": "Slack OAuth2 strategy for Passport.",
   "keywords": [
     "passport",
@@ -12,10 +12,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/mikestaub/passport-slack.git"
+    "url": "git://github.com/asynchronous-dev/passport-slack.git"
   },
   "bugs": {
-    "url": "http://github.com/mikestaub/passport-slack/issues"
+    "url": "http://github.com/asynchronous-dev/passport-slack/issues"
   },
   "licenses": [
     {
