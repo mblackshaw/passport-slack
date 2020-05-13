@@ -6,9 +6,11 @@ with [Slack](https://slack.com) using the OAuth 2.0 API.
 Updated to support Sign in with Slack by default.<br>
 [![Sign in with Slack](https://a.slack-edge.com/accd8/img/sign_in_with_slack.png)](https://api.slack.com/docs/sign-in-with-slack#identify_users_and_their_teams)
 
+Configured to use v1 of the Slack OAuth API by default but supports the new paramaters for granular scopes and [v2 of the Slack OAuth API](https://api.slack.com/authentication/oauth-v2).
+
 ## Install
 ```shell
-$ npm install @mikestaub/passport-slack
+$ npm install async-passport-slack
 ```
 
 ## Express Example
@@ -19,10 +21,33 @@ const {CLIENT_ID, CLIENT_SECRET, PORT} = process.env,
       express = require('express'),
       app = express();
 
-// setup the strategy using defaults 
+// example with Slack OAuth v2 install using granular scopes
 passport.use(new SlackStrategy({
     clientID: CLIENT_ID,
     clientSecret: CLIENT_SECRET
+    authorizationURL: 'https://slack.com/oauth/v2/authorize',
+    tokenURL: 'https://slack.com/api/oauth.v2.access',
+    scope: [
+        'chat:write'
+    ],
+  }, (accessToken, refreshToken, profile, done) => {
+    // optionally persist profile data
+    done(null, profile);
+  }
+));
+
+// example with Slack OAuth v2 signin with slack
+passport.use(new SlackStrategy({
+    clientID: CLIENT_ID,
+    clientSecret: CLIENT_SECRET
+    authorizationURL: 'https://slack.com/oauth/v2/authorize',
+    tokenURL: 'https://slack.com/api/oauth.v2.access',
+    user_scope: [
+        'identity.basic',
+        'identity.team',
+        'identity.email',
+        'identity.avatar',
+    ],
   }, (accessToken, refreshToken, profile, done) => {
     // optionally persist profile data
     done(null, profile);
