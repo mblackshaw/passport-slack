@@ -21,21 +21,6 @@ const {CLIENT_ID, CLIENT_SECRET, PORT} = process.env,
       express = require('express'),
       app = express();
 
-// example with Slack OAuth v2 install using granular scopes
-passport.use(new SlackStrategy({
-    clientID: CLIENT_ID,
-    clientSecret: CLIENT_SECRET
-    authorizationURL: 'https://slack.com/oauth/v2/authorize',
-    tokenURL: 'https://slack.com/api/oauth.v2.access',
-    scope: [
-        'chat:write'
-    ],
-  }, (accessToken, refreshToken, profile, done) => {
-    // optionally persist profile data
-    done(null, profile);
-  }
-));
-
 // example with Slack OAuth v2 signin with slack
 passport.use(new SlackStrategy({
     clientID: CLIENT_ID,
@@ -144,8 +129,6 @@ app.get('/auth/slack/callback',
 ```
 
 ### Custom Scopes
-By default passport-slack strategy will try to retrieve [all user identity](https://api.slack.com/methods/users.identity) from Slack using the default scopes of `identity.basic`, `identity.email`, `identity.avatar`, and `identity.team`. To override these, set the `scope` parameter to an array of scopes.
-
 ```js
 passport.use(new SlackStrategy({
 	clientID: CLIENT_ID,
@@ -154,15 +137,60 @@ passport.use(new SlackStrategy({
 }, () => { });
 ```
 
-### Ignore Profile Info
-If you just need an access token and not user profile data, you can avoid getting profile info by setting `skipUserProfile` to true.
+### Slack OAuth v2 install using granular scopes
 ```js
 passport.use(new SlackStrategy({
-	clientID: CLIENT_ID,
-	clientSecret: CLIENT_SECRET,
-	scope: ['incoming-webhook'],
-	skipUserProfile: true
-}, () => { });
+    clientID: CLIENT_ID,
+    clientSecret: CLIENT_SECRET
+    authorizationURL: 'https://slack.com/oauth/v2/authorize',
+    tokenURL: 'https://slack.com/api/oauth.v2.access',
+    scope: [
+        'chat:write'
+    ],
+  }, (accessToken, refreshToken, profile, done) => {
+    // optionally persist profile data
+    done(null, profile);
+  }
+));
+```
+
+### Slack OAuth v2 signin with slack
+```js
+passport.use(new SlackStrategy({
+    clientID: CLIENT_ID,
+    clientSecret: CLIENT_SECRET
+    authorizationURL: 'https://slack.com/oauth/v2/authorize',
+    tokenURL: 'https://slack.com/api/oauth.v2.access',
+    user_scope: [
+        'identity.basic',
+        'identity.team',
+        'identity.email',
+        'identity.avatar',
+    ],
+  }, (accessToken, refreshToken, profile, done) => {
+    // optionally persist profile data
+    done(null, profile);
+  }
+));
+```
+
+### Ignore Profile Info
+Slack's v2 OAuth response does not follow the existing standards, so passport is unable to find the auth token and unable to retrieve the profile. You will need to manually
+extract the auth token from the `params` parameter in the callback.
+Or, if you just need an access token and not user profile data, you can avoid getting profile info by setting `skipUserProfile` to true.
+```js
+passport.use(new SlackStrategy({
+	user_scope: [
+    'identity.basic',
+    'identity.team',
+    'identity.email',
+    'identity.avatar',
+  ],
+  passReqToCallback: true,
+  authorizationURL: 'https://slack.com/oauth/v2/authorize',
+  tokenURL: 'https://slack.com/api/oauth.v2.access',
+  skipUserProfile: true,
+}, (req, accessToken, refreshToken, params, profile, done) => { });
 ```
 
 ## Thanks
