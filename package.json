@@ -23,7 +23,8 @@
       "url": "http://www.opensource.org/licenses/MIT"
     }
   ],
-  "main": "./lib/passport-slack",
+  "main": "./lib/passport-slack/index.js",
+  "types": "./lib/passport-slack/index.d.ts",
   "dependencies": {
     "passport-oauth": "^1.0.0"
   },
